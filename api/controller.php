@@ -7,11 +7,11 @@ if($_POST['tipo'] == 'gerarChaves'){
   $rsa = new Crypt_RSA();
   extract($rsa->createKey());
   $arrayChaves = [$privatekey, $publickey];
-  $chavePrivada = fopen($_POST['nome'] . ".pr" . ".txt", "w") or die("Unable to open file!");
+  $chavePrivada = fopen((__DIR__) . '/' . $_POST['nome'] . ".pr" . ".txt", "w") or die("Unable to open file!");
   $txt = $privatekey;
   fwrite($chavePrivada, $txt);
   fclose($chavePrivada);
-  $chavePublica = fopen($_POST['nome'] . ".pu" . ".txt", "w") or die("Unable to open file!");
+  $chavePublica = fopen((__DIR__) . '/' . $_POST['nome'] . ".pu" . ".txt", "w") or die("Unable to open file!");
   $txt = $publickey;
   fwrite($chavePublica, $txt);
   fclose($chavePublica);

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Criptografia</title>
+  </head>
+  <body>
+    <div class="container">
+      <div id="divRadio">
+        <input type="radio" name="radio" id="radioChaves" checked="checked" value="cesar" >
+        <label for="radioChaves">Gerar chaves</label>
+        <input type="radio" name="radio" id="radioEncrypt">
+        <label for="radioEncrypt">Criptografar</label>
+        <input type="radio" name="radio" id="radioDecrypt">
+        <label for="radioDecrypt">Descriptografar</label>
+      </div>
+
+      <div id="divChaves">
+        <label for="nome" style="margin: 20px 0 0 70px;">Nome:</label>
+        <br>
+        <input type="text" style="margin: 20px 0 0 90px;" id="nome" required name="nome">
+        <br>
+        <button id="btnChaves" onclick="gerarChaves()" style="margin: 20px 0 0 90px;" type="button">Gerar par de chaves</button>
+        <br>
+        <span style="margin: 20px 0px 0 90px; color:rgb(4, 179, 4);" id="chavesGeradas"></span>
+        <br>
+        <button onclick="downloadChavePublica()" disabled style="margin: 20px 0px 0 90px;" id="btnChavePublica" type="button">Baixar chave pública</button>
+        <button onclick="downloadChavePrivada()" disabled id="btnChavePrivada" type="button">Baixar chave privada</button>
+      </div>
+      <br>
+      
+    </div>
+  </body>
+</html>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<script>
+  function downloadChavePublica() {
+    var element = document.createElement('a');
+    element.setAttribute('href', 'api/' + $('#nome').val() + ".pu.txt");
+    element.setAttribute('download', $('#nome').val() + ".pu.txt");
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  }
+
+  function downloadChavePrivada() {
+    var element = document.createElement('a');
+    element.setAttribute('href', 'api/' + $('#nome').val() + ".pr.txt");
+    element.setAttribute('download', $('#nome').val() + ".pr.txt");
+    element.style.display = 'none';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  }
+
+  function gerarChaves(){
+    $.ajax({
+      method: "POST",
+      url: "api/controller.php",
+      data: {tipo: 'gerarChaves', nome : $('#nome').val()},
+      dataType: "json",
+      success: function (){
+        $("#chavesGeradas").html("Chaves geradas com sucesso!");
+        $("#btnChavePrivada").prop('disabled', false);
+        $("#btnChavePublica").prop('disabled', false);
+        $("#nome").prop('readonly', true);
+      }
+    });
+
+    $("#btnChaves").prop("disabled",true);
+    $("#formChaves").prop("hidden",true);
+
+
+    
+    // $.ajax({
+    //   method: "POST",
+    //   url: "api/controller.php",
+    //   data: formdata,
+    //   processData: false,
+    //   contentType: false,
+    //   success: function (palavra){
+    //     $("#saida").html("");
+    //     palavra = JSON.parse(palavra);
+    //     if(palavra[0] == "cesar"){
+    //       for (let index = 1; index < palavra.length; index++) {
+    //         $("#saida").html($("#saida").val() + "Rotação " + palavra[index][1] + " => " + palavra[index][0] + "\n");
+    //       }
+    //     }
+    //     else if(palavra[0] == "vigenere"){
+    //       $("#saida").html($("#saida").val() + "Chave " + palavra[1][1] + " => " + palavra[1][0] + "\n");
+    //       for (let index = 2; index < palavra.length; index++) {
+    //         $("#saidaVigenere").html($("#saidaVigenere").val() + "Chave " + palavra[index][1] + " => " + palavra[index][0] + "\n");
+    //       }
+    //       $("#btnBaixar").prop("disabled",false);
+    //     }
+    //     else{
+    //       $("#saida").html("O arquivo informado está vazio!");
+    //     }
+    //   }
+  }
+</script>

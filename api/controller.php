@@ -1,5 +1,5 @@
 <?php
-include((__DIR__).'/Crypt/RSA.php');
+include('Crypt/RSA.php');
 
 if($_POST['tipo'] == 'gerarChaves'){
   array_map('unlink', glob("*.txt"));

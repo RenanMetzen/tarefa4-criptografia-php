@@ -41,7 +41,7 @@
 <script>
   function downloadChavePublica() {
     var element = document.createElement('a');
-    element.setAttribute('href', 'api/' + $('#nome').val() + ".pu.txt");
+    element.setAttribute('href', 'api/chave.pu.txt');
     element.setAttribute('download', $('#nome').val() + ".pu.txt");
     element.style.display = 'none';
     document.body.appendChild(element);
@@ -51,7 +51,7 @@
 
   function downloadChavePrivada() {
     var element = document.createElement('a');
-    element.setAttribute('href', 'api/' + $('#nome').val() + ".pr.txt");
+    element.setAttribute('href', 'api/chave.pr.txt');
     element.setAttribute('download', $('#nome').val() + ".pr.txt");
     element.style.display = 'none';
     document.body.appendChild(element);

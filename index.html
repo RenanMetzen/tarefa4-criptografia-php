@@ -31,7 +31,8 @@
         <button onclick="downloadChavePrivada()" disabled id="btnChavePrivada" type="button">Baixar chave privada</button>
       </div>
       <br>
-      
+      <a id="chavePrivada" hidden></a>
+      <a id="chavePublica" hidden></a>
     </div>
   </body>
 </html>
@@ -40,23 +41,15 @@
 
 <script>
   function downloadChavePublica() {
-    var element = document.createElement('a');
-    element.setAttribute('href', 'api/chave.pu.txt');
+    var element = document.getElementById('chavePublica');
     element.setAttribute('download', $('#nome').val() + ".pu.txt");
-    element.style.display = 'none';
-    document.body.appendChild(element);
     element.click();
-    document.body.removeChild(element);
   }
 
   function downloadChavePrivada() {
-    var element = document.createElement('a');
-    element.setAttribute('href', 'api/chave.pr.txt');
+    var element = document.getElementById('chavePrivada');
     element.setAttribute('download', $('#nome').val() + ".pr.txt");
-    element.style.display = 'none';
-    document.body.appendChild(element);
     element.click();
-    document.body.removeChild(element);
   }
 
   function gerarChaves(){
@@ -65,11 +58,14 @@
       url: "api/controller.php",
       data: {tipo: 'gerarChaves', nome : $('#nome').val()},
       dataType: "json",
-      success: function (){
+      success: function (chaves){
         $("#chavesGeradas").html("Chaves geradas com sucesso!");
         $("#btnChavePrivada").prop('disabled', false);
         $("#btnChavePublica").prop('disabled', false);
         $("#nome").prop('readonly', true);
+        document.getElementById('chavePrivada').setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(chaves[0]));
+        document.getElementById('chavePublica').setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(chaves[1]));
+        $('#chavePublica').val(chaves[1]);
       }
     });
 

@@ -8,18 +8,16 @@ if($_POST['tipo'] == 'gerarChaves'){
 
   $arrayChaves = [$privatekey, $publickey];
 
-  $chavePrivada = fopen((__DIR__) . '/chave.pr.txt', "w") or die("Unable to open file!");
-  $txt = $privatekey;
-  fwrite($chavePrivada, $txt);
-  fclose($chavePrivada);
+  // $chavePrivada = fopen((__DIR__) . '/chave.pr.txt', "w") or die("Unable to open file!");
+  // $txt = $privatekey;
+  // fwrite($chavePrivada, $txt);
+  // fclose($chavePrivada);
 
-  $chavePublica = fopen((__DIR__) . '/chave.pu.txt', "w") or die("Unable to open file!");
-  $txt = $publickey;
-  fwrite($chavePublica, $txt);
-  fclose($chavePublica);
-
-
+  // $chavePublica = fopen((__DIR__) . '/chave.pu.txt', "w") or die("Unable to open file!");
+  // $txt = $publickey;
+  // fwrite($chavePublica, $txt);
+  // fclose($chavePublica);
+  echo json_encode($arrayChaves);
 }
-echo json_encode($_POST['nome']);
 ?>
 

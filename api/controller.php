@@ -1,22 +1,23 @@
 <?php
 include('Crypt/RSA.php');
 
-if($_POST['tipo'] == 'gerarChaves'){
+if(isset($_POST['chaves'])){
   $arrayChaves = array();
   $rsa = new Crypt_RSA();
   extract($rsa->createKey());
 
   $arrayChaves = [$privatekey, $publickey];
+  echo json_encode($arrayChaves);
+}elseif(isset($_FILES['texto'])){
+  ini_set( 'default_charset', 'utf-8');
+  $formatosPermitidos = "txt";
+  $extensao = pathinfo($_FILES['texto']['name'], PATHINFO_EXTENSION);
+  $temporario = $_FILES['texto']['tmp_name'];
+  $palavra = file_get_contents($temporario);
 
-  // $chavePrivada = fopen((__DIR__) . '/chave.pr.txt', "w") or die("Unable to open file!");
-  // $txt = $privatekey;
-  // fwrite($chavePrivada, $txt);
-  // fclose($chavePrivada);
 
-  // $chavePublica = fopen((__DIR__) . '/chave.pu.txt', "w") or die("Unable to open file!");
-  // $txt = $publickey;
-  // fwrite($chavePublica, $txt);
-  // fclose($chavePublica);
+  $arrayChaves = [$palavra];
+
   echo json_encode($arrayChaves);
 }
 ?>

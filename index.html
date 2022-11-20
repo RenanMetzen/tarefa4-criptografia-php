@@ -52,8 +52,8 @@
       </form>
 
       <form action="api/controller.php" method="POST" id="divDecrypt" hidden enctype="multipart/form-data">
-        <label for="textoCifrado" style="margin: 20px 0 0 70px;">Texto cifrado:</label>
-        <input type="file" id="textoCifrado" required name="textoCifrado">
+        <label for="inputTextoCifrado" style="margin: 20px 0 0 70px;">Texto cifrado:</label>
+        <input type="file" id="inputTextoCifrado" required name="inputTextoCifrado">
         <br>
         <label for="key" style="margin: 20px 0 0 70px;">Key:</label>
         <input type="file" id="key" required name="key">
@@ -65,10 +65,10 @@
         <input type="file" id="inputChavePrivada" required name="inputChavePrivada">
         <button id="btnDescriptografar" style="margin: 20px 0 0 90px;" type="submit">Descriptografar arquivo</button>
         <br>
-        <span style="margin: 20px 0px 0 90px; color:rgb(4, 179, 4);" id="arquivoCriptografado"></span>
+        <span style="margin: 20px 0px 0 90px; color:rgb(4, 179, 4);" id="arquivoDescriptografado"></span>
         <br>
         <button onclick="downloadTextoClaro()" disabled style="margin: 20px 0px 0 90px;" id="btnTextoClaro" type="button">Baixar texto decifrado</button>
-        <a id="textoClaro" hidden></a>
+        <a id="linkTextoClaro" hidden></a>
       </form>
 
       <br>
@@ -125,6 +125,12 @@
     element.click();
   }
 
+  function downloadTextoClaro() {
+    var element = document.getElementById('linkTextoClaro');
+    element.setAttribute('download', "x.txt");
+    element.click();
+  }
+
   
   function gerarChaves(){
     $.ajax({
@@ -142,7 +148,6 @@
       }
     });
     $("#btnChaves").prop("disabled",true);
-    $("#formChaves").prop("hidden",true);
   }
 
   $('#divEncrypt').on('submit', function(e){
@@ -156,7 +161,7 @@
       processData: false,
       contentType: false,
       success: function (chaves){
-        $("#arquivoCriptografado").html(chaves);
+        $("#arquivoCriptografado").html("Texto criptografado com sucesso!");
         $("#btnTextoCifrado").prop('disabled', false);
         $("#btnChaveSimetrica").prop('disabled', false);
         $("#btnVetorInicial").prop('disabled', false);
@@ -167,8 +172,7 @@
         document.getElementById('vetorInicial').setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(chaves[2]));
       }
     });
-    $("#btnChaves").prop("disabled",true);
-    $("#formChaves").prop("hidden",true);
+    $("#btnCriptografar").prop("disabled",true);
   });
 
   $('#divDecrypt').on('submit', function(e){
@@ -182,18 +186,15 @@
       processData: false,
       contentType: false,
       success: function (chaves){
-        $("#arquivoCriptografado").html(chaves);
-        $("#btnTextoCifrado").prop('disabled', false);
-        $("#btnChaveSimetrica").prop('disabled', false);
-        $("#btnVetorInicial").prop('disabled', false);
-        $("#texto").prop('disabled', true);
-        $("#inputChavePublica").prop('disabled', true);
-        document.getElementById('textoCifrado').setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(chaves[0]));
-        document.getElementById('chaveSimetrica').setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(chaves[1]));
-        document.getElementById('vetorInicial').setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(chaves[2]));
+        $("#arquivoDescriptografado").html("Texto descriptografado com sucesso!");
+        $("#iv").prop('disabled', true);
+        $("#key").prop('disabled', true);
+        $("#inputChavePrivada").prop('disabled', true);
+        $("#inputTextoCifrado").prop('disabled', true);
+        $("#btnTextoClaro").prop('disabled', false);
+        document.getElementById('linkTextoClaro').setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(chaves));
       }
     });
-    $("#btnChaves").prop("disabled",true);
-    $("#formChaves").prop("hidden",true);
+    $("#btnDescriptografar").prop("disabled",true);
   });
 </script>

@@ -25,12 +25,13 @@ if(isset($_POST['chaves'])){
   $chavePublica = file_get_contents($temporario);
 
   $cipher = "AES-128-CBC";
-  $iv = random_bytes(8);
-  $iv = bin2hex($iv);
-  $key = random_bytes(8);
-  $key = bin2hex($key);
+  $iv = random_bytes(16);
+  $key = random_bytes(16);
 
   $textoCifrado = openssl_encrypt($textoClaro, $cipher, $key, $options=0, $iv);
+  
+  $iv = bin2hex($iv);
+  $key = bin2hex($key);
 
   // $rsa = new Crypt_RSA();
   // $rsa->loadKey($chavePublica); // public key
@@ -38,7 +39,7 @@ if(isset($_POST['chaves'])){
   // $rsa->setEncryptionMode(CRYPT_RSA_ENCRYPTION_PKCS1);
   // $ciphertext = $rsa->encrypt($textoCifrado);
 
-  $arrayEncrypt = [$textoCifrado, $key2, $iv2];
+  $arrayEncrypt = [$textoCifrado, $key, $iv];
 
   echo json_encode($arrayEncrypt);
 
@@ -48,19 +49,21 @@ if(isset($_POST['chaves'])){
   ini_set( 'default_charset', 'utf-8');
 
   $formatosPermitidos = "txt";
-  $extensao = pathinfo($_FILES['textoCifrado']['name'], PATHINFO_EXTENSION);
-  $temporario = $_FILES['textoCifrado']['tmp_name'];
+  $extensao = pathinfo($_FILES['inputTextoCifrado']['name'], PATHINFO_EXTENSION);
+  $temporario = $_FILES['inputTextoCifrado']['tmp_name'];
   $textoCifrado = file_get_contents($temporario);
 
   $formatosPermitidos = "txt";
   $extensao = pathinfo($_FILES['key']['name'], PATHINFO_EXTENSION);
   $temporario = $_FILES['key']['tmp_name'];
   $key = file_get_contents($temporario);
+  $key = hex2bin($key);
 
   $formatosPermitidos = "txt";
   $extensao = pathinfo($_FILES['iv']['name'], PATHINFO_EXTENSION);
   $temporario = $_FILES['iv']['tmp_name'];
   $iv = file_get_contents($temporario);
+  $iv = hex2bin($iv);
 
   $formatosPermitidos = "txt";
   $extensao = pathinfo($_FILES['inputChavePrivada']['name'], PATHINFO_EXTENSION);

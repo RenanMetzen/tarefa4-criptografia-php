@@ -63,10 +63,16 @@
         <br>
         <label for="inputChavePrivada" style="margin: 20px 0 0 70px;">Chave privada:</label>
         <input type="file" id="inputChavePrivada" required name="inputChavePrivada">
-        <button id="btnDescriptografar" style="margin: 20px 0 0 90px;" type="submit">Descriptografar arquivo</button>
+        <button id="btnDescriptografar" style="margin: 20px 0 0 90px;" type="submit">Aplicar valores</button>
+        <br>
+        <button id="btnDecrypt" style="margin: 20px 0 0 90px;" type="button">Descriptografar</button>
         <br>
         <span style="margin: 20px 0px 0 90px; color:rgb(4, 179, 4);" id="arquivoDescriptografado"></span>
         <br>
+        <input type="text" hidden id="key2" name="key2">
+        <input type="text" hidden id="iv2" name="iv2">
+        <input type="text" hidden id="textoCifrado2" name="textoCifrado2">
+        <input type="text" hidden id="chavePrivada2" name="chavePrivada2">
         <button onclick="downloadTextoClaro()" disabled style="margin: 20px 0px 0 90px;" id="btnTextoClaro" type="button">Baixar texto decifrado</button>
         <a id="linkTextoClaro" hidden></a>
       </form>
@@ -77,6 +83,7 @@
 </html>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="jsencrypt\bin\jsencrypt.js"></script>
 
 <script>
   function tipoChave(){
@@ -167,9 +174,15 @@
         $("#btnVetorInicial").prop('disabled', false);
         $("#texto").prop('disabled', true);
         $("#inputChavePublica").prop('disabled', true);
+
+        var crypt = new JSEncrypt();
+        crypt.setPublicKey(chaves[3]);
+        var K2 = crypt.encrypt(chaves[1]);
+        var iv2 = crypt.encrypt(chaves[2]);
+
         document.getElementById('textoCifrado').setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(chaves[0]));
-        document.getElementById('chaveSimetrica').setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(chaves[1]));
-        document.getElementById('vetorInicial').setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(chaves[2]));
+        document.getElementById('chaveSimetrica').setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(K2));
+        document.getElementById('vetorInicial').setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(iv2));
       }
     });
     $("#btnCriptografar").prop("disabled",true);
@@ -180,21 +193,44 @@
     var formdata = new FormData(this);
     $.ajax({
       method: "POST",
-      url: "api/controller.php",
+      url: "api/chave.php",
       data: formdata,
       dataType: "json",
       processData: false,
       contentType: false,
       success: function (chaves){
-        $("#arquivoDescriptografado").html("Texto descriptografado com sucesso!");
-        $("#iv").prop('disabled', true);
-        $("#key").prop('disabled', true);
-        $("#inputChavePrivada").prop('disabled', true);
-        $("#inputTextoCifrado").prop('disabled', true);
-        $("#btnTextoClaro").prop('disabled', false);
-        document.getElementById('linkTextoClaro').setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(chaves));
+        $("#key2").val(chaves[0]);
+        $("#iv2").val(chaves[1]);
+        $("#textoCifrado2").val(chaves[2]);
+        $("#chavePrivada2").val(chaves[3]);
       }
     });
-    $("#btnDescriptografar").prop("disabled",true);
+
   });
+  $('#btnDecrypt').on('click', function(e){
+
+    var decrypt = new JSEncrypt();
+    decrypt.setPrivateKey(document.getElementById("chavePrivada2").value);
+    var K2 = decrypt.decrypt(document.getElementById("key2").value);
+    var iv2 = decrypt.decrypt(document.getElementById("iv2").value);
+    var textoCifrado2 = document.getElementById("textoCifrado2").value;
+
+    $.ajax({
+        method: "POST",
+        url: "api/controller.php",
+        data: {textoCifrado: textoCifrado2, key: K2, iv: iv2},
+        dataType: "json",
+        processData: true,
+        success: function (chaves){
+          $("#arquivoDescriptografado").html("Texto descriptografado com sucesso!");
+          $("#iv").prop('disabled', true);
+          $("#key").prop('disabled', true);
+          $("#inputChavePrivada").prop('disabled', true);
+          $("#inputTextoCifrado").prop('disabled', true);
+          $("#btnTextoClaro").prop('disabled', false);
+          document.getElementById('linkTextoClaro').setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(chaves));
+        }
+      });
+      $("#btnDescriptografar").prop("disabled",true);
+    });
 </script>

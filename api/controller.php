@@ -4,7 +4,7 @@ include('Crypt/RSA.php');
 if(isset($_POST['chaves'])){
   $arrayChaves = array();
   $rsa = new Crypt_RSA();
-  extract($rsa->createKey());
+  extract($rsa->createKey(2048, 10));
 
   $arrayChaves = [$privatekey, $publickey];
   echo json_encode($arrayChaves);
@@ -23,6 +23,7 @@ if(isset($_POST['chaves'])){
   $extensao = pathinfo($_FILES['inputChavePublica']['name'], PATHINFO_EXTENSION);
   $temporario = $_FILES['inputChavePublica']['tmp_name'];
   $chavePublica = file_get_contents($temporario);
+  // $chavePublica = openssl_pkey_get_public($temporario);
 
   $cipher = "AES-128-CBC";
   $iv = random_bytes(16);
@@ -33,43 +34,23 @@ if(isset($_POST['chaves'])){
   $iv = bin2hex($iv);
   $key = bin2hex($key);
 
-  // $rsa = new Crypt_RSA();
-  // $rsa->loadKey($chavePublica); // public key
-
-  // $rsa->setEncryptionMode(CRYPT_RSA_ENCRYPTION_PKCS1);
-  // $ciphertext = $rsa->encrypt($textoCifrado);
-
-  $arrayEncrypt = [$textoCifrado, $key, $iv];
+  $arrayEncrypt = [$textoCifrado, $key, $iv, $chavePublica];
 
   echo json_encode($arrayEncrypt);
 
 }else{
-  $arrayEncrypt = array();
+  $textoClaroOriginal = array();
   define('CRYPT_RSA_PKCS15_COMPAT', true);
   ini_set( 'default_charset', 'utf-8');
 
-  $formatosPermitidos = "txt";
-  $extensao = pathinfo($_FILES['inputTextoCifrado']['name'], PATHINFO_EXTENSION);
-  $temporario = $_FILES['inputTextoCifrado']['tmp_name'];
-  $textoCifrado = file_get_contents($temporario);
+  
+  $textoCifrado = $_POST['textoCifrado'];
+  $key = $_POST['key'];
+  $iv = $_POST['iv'];
 
-  $formatosPermitidos = "txt";
-  $extensao = pathinfo($_FILES['key']['name'], PATHINFO_EXTENSION);
-  $temporario = $_FILES['key']['tmp_name'];
-  $key = file_get_contents($temporario);
-  $key = hex2bin($key);
-
-  $formatosPermitidos = "txt";
-  $extensao = pathinfo($_FILES['iv']['name'], PATHINFO_EXTENSION);
-  $temporario = $_FILES['iv']['tmp_name'];
-  $iv = file_get_contents($temporario);
-  $iv = hex2bin($iv);
-
-  $formatosPermitidos = "txt";
-  $extensao = pathinfo($_FILES['inputChavePrivada']['name'], PATHINFO_EXTENSION);
-  $temporario = $_FILES['inputChavePrivada']['tmp_name'];
-  $chavePrivada = file_get_contents($temporario);
   $cipher = "AES-128-CBC";
+  $iv = hex2bin($iv);
+  $key = hex2bin($key);
 
   $textoClaroOriginal = openssl_decrypt($textoCifrado, $cipher, $key, $options=0, $iv);
 

@@ -29,6 +29,8 @@ if(isset($_POST['chaves'])){
   $iv = random_bytes(16);
   $key = random_bytes(16);
 
+
+  
   $textoCifrado = openssl_encrypt($textoClaro, $cipher, $key, $options=0, $iv);
   
   $iv = bin2hex($iv);
@@ -55,6 +57,21 @@ if(isset($_POST['chaves'])){
   $textoClaroOriginal = openssl_decrypt($textoCifrado, $cipher, $key, $options=0, $iv);
 
   echo json_encode($textoClaroOriginal);
+}
+
+
+if( !function_exists('random_bytes') )
+{
+    function random_bytes($length = 6)
+    {
+        $characters = '0123456789';
+        $characters_length = strlen($characters);
+        $output = '';
+        for ($i = 0; $i < $length; $i++)
+            $output .= $characters[rand(0, $characters_length - 1)];
+
+        return $output;
+    }
 }
 ?>
 

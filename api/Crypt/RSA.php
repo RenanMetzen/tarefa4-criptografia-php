@@ -498,7 +498,7 @@ class Crypt_RSA
     function __construct()
     {
         if (!class_exists('Math_BigInteger')) {
-            include_once (__DIR__) . '/Math/BigInteger.php';
+            include_once 'Math/BigInteger.php';
         }
 
         $this->configFile = CRYPT_RSA_OPENSSL_CONFIG;
